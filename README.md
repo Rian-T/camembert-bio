@@ -5,7 +5,7 @@
 # CamemBERT-bio : a Tasty French Language Model Better for your Health
 
 CamemBERT-bio is a state-of-the-art french biomedical language model built using continual-pretraining from [camembert-base](https://huggingface.co/camembert-base). 
-It was trained on a french public biomedical corpus of 413M words containing scientific documments, drug leaflets and clinical cases extrated from theses and articles.
+It was trained on a french public biomedical corpus of 413M words containing scientific documents, drug leaflets and clinical cases extracted from theses and articles.
 It shows 2.54 points of F1 score improvement on average on 5 different biomedical named entity recognition tasks compared to [camembert-base](https://huggingface.co/camembert-base).
 
 ## Absract
