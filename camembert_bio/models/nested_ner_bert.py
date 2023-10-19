@@ -339,32 +339,47 @@ class NestedPerDepthNERModel(pl.LightningModule):
         return optimizer
 
     def predict_example(self, example):
+        mode = self.training  # Save the original mode
+        self.eval()
         text = example['passages'][0]['text'][0]  # Get the text from the example
         doc = self.nlp(text)  # Process text with stanza
-        
         predicted_entities = []
         
         # Iterate over sentences
         for idx, sentence in enumerate(doc.sentences):
-            tokens = [token.text for token in sentence.tokens]  # Tokenize sentence
-            offsets = [(token.start_char, token.end_char) for token in sentence.tokens]  # Get token offsets
-            input_ids = self.tokenizer.convert_tokens_to_ids(tokens)  # Convert tokens to IDs
-            input_ids = torch.tensor([input_ids]).to(self.device)  # Assume the model is on the same device
-            
+            tokens = [token.text for token in sentence.tokens]
+            encoding = self.tokenizer(
+                tokens,
+                is_split_into_words=True,
+                truncation=True,
+                padding="max_length",
+                max_length=512,
+                return_tensors="pt",
+            )
+            input_ids = encoding["input_ids"].squeeze()
+            attention_mask = encoding["attention_mask"].squeeze()
+
+            #tokens = self.tokenizer.convert_ids_to_tokens(input_ids)
+
+            input_ids = input_ids.unsqueeze(0)
+            attention_mask = attention_mask.unsqueeze(0)
+
             # Get model predictions
-            logits_per_depth = self(input_ids)  # This will return a list of logits, one for each depth
+            logits_per_depth = self(input_ids, attention_mask)  # This will return a list of logits, one for each depth
             
             # Convert logits to tag sequences and extract entities for each depth
             for logits in logits_per_depth:
+                tag_ids = torch.argmax(logits, dim=-1).cpu().numpy()
                 tags = self.logits_to_tags(logits, self.id2label)[0]  # Assuming logits_to_tags returns a list of lists
                 sentence_predicted_entities = tags_to_entities_with_offsets(tokens, tags, sentence.text)
-                
                 # Adjust the offsets based on the position of the sentence in the original text
                 sentence_start_offset = text.index(sentence.text)
                 for entity in sentence_predicted_entities:
                     entity['offsets'] = [(start + sentence_start_offset, end + sentence_start_offset) for start, end in entity['offsets']]
-                
                 predicted_entities.extend(sentence_predicted_entities)
         
+        if mode:
+            self.train()  # If the original mode was training, revert back to it.
+
         return predicted_entities
 

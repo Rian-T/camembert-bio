@@ -1,5 +1,8 @@
+from unittest.mock import MagicMock, patch
 import pytest
-from camembert_bio.utils.offsets_evaluation import tags_to_entities_with_offsets  # Adjust the import to your file structure
+import torch
+from camembert_bio.utils.offsets_evaluation import tags_to_entities_with_offsets
+from camembert_bio.models.nested_ner_bert import NestedPerDepthNERModel
 
 @pytest.mark.parametrize(
     "tokens,tags,text,expected",
@@ -40,3 +43,31 @@ from camembert_bio.utils.offsets_evaluation import tags_to_entities_with_offsets
 def test_tags_to_entities_with_offsets(tokens, tags, text, expected):
     result = tags_to_entities_with_offsets(tokens, tags, text)
     assert result == expected
+
+
+# Mocked version of tags_to_entities_with_offsets function
+def mock_tags_to_entities_with_offsets(tokens, tags, text):
+    # Mocked behavior. Can be adjusted based on your testing needs.
+    return [{'offsets': [(0, len(token))], 'token': token, 'tag': tag} for token, tag in zip(tokens, tags)]
+
+@pytest.fixture
+def mock_model():
+    model = NestedPerDepthNERModel(n_depth=1, id2label={0: 'O', 1: 'Entity'})
+    model.nlp = MagicMock(return_value=MagicMock(sentences=[MagicMock(tokens=['Sample', 'Text'], text='Sample Text')]))
+    model.tokenizer.convert_tokens_to_ids = MagicMock(return_value=[0, 1])
+    model.forward = MagicMock(return_value=[torch.tensor([[[0.7, 0.3], [0.5, 0.5]]])])  # Mock logits for 2 tokens
+    model.logits_to_tags = MagicMock(return_value=[['O', 'Entity']])
+    return model
+
+def test_predict_example_functionality(mock_model):
+    example = {'passages': [{'text': ['Sample Text']}]}
+
+    with patch('camembert_bio.utils.offsets_evaluation.tags_to_entities_with_offsets', mock_tags_to_entities_with_offsets): 
+        predicted_entities = mock_model.predict_example(example)
+
+    assert len(predicted_entities) == 2  # Expecting two tokens in the output
+    assert predicted_entities[0]['token'] == 'Sample'  # First token
+    assert predicted_entities[0]['tag'] == 'O'  # Its corresponding tag
+    assert predicted_entities[1]['token'] == 'Text'  # Second token
+    assert predicted_entities[1]['tag'] == 'Entity'  # Its corresponding tag
+

@@ -20,8 +20,11 @@ def compare_entities(predicted_entities, true_entities):
     exact_matches = 0
     for predicted_entity in predicted_entities:
         for true_entity in true_entities:
+            print(f"predicted_entity: {predicted_entity}")
+            print(f"true_entity: {true_entity}")
             if predicted_entity['offsets'] == true_entity['offsets'] and predicted_entity['type'] == true_entity['type']:
                 exact_matches += 1
+                print("exact match found")
     return exact_matches, len(predicted_entities), len(true_entities)
 
 
