@@ -19,7 +19,11 @@ def main():
     data_module = NestedNERDataModule(data_train, data_val, batch_size=32, max_length=512, num_workers=2)
 
     # model = NestedPerDepthNERModel(
-    #     n_depth=preprocessor.n_layers, id2label=preprocessor.id2label, stack_depths=True, learning_rate=5e-5, dropout_prob=0.1
+    #     pretrained_model_name="camembert-base", n_depth=preprocessor.n_layers, id2label=preprocessor.id2label, stack_depths=True, learning_rate=5e-5, dropout_prob=0.1
+    # )
+
+    # model = NestedPerClassNERModel(
+    #     pretrained_model_name="camembert-base",  id2label=preprocessor.id2label, stack_classes=True, learning_rate=5e-5, dropout_prob=0.1
     # )
 
     model = NestedPerDepthNERModel.load_from_checkpoint("nested_ner.ckpt", n_depth=preprocessor.n_layers, id2label=preprocessor.id2label, stack_depths=True, learning_rate=5e-5, dropout_prob=0.1)

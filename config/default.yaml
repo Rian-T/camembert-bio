@@ -1,0 +1,4 @@
+defaults:
+  - dataset: medline
+  - model: per_depth
+  - trainer: default
