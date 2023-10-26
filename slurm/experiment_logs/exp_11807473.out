@@ -1,0 +1,11 @@
+==========================================
+SLURM_JOB_ID = 1807473
+SLURM_JOB_NODELIST = gpu005
+==========================================
+### Launching Experiment - CamemBERT-bio ###
+Installing dependencies from lock file
+
+Package operations: 0 installs, 1 update, 0 removals
+
+  • Updating torch (2.0.1 -> 2.1.0)
+slurmstepd: error: *** JOB 1807473 ON gpu005 CANCELLED AT 2023-10-26T16:24:43 ***

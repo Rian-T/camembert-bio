@@ -1,0 +1,31 @@
+==========================================
+SLURM_JOB_ID = 1807450
+SLURM_JOB_NODELIST = gpu007
+==========================================
+### Launching Experi BioMedCamembert ###
+/home/rtouchen/camembert-bio/camembert_bio/main.py:11: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_path="config", config_name="default")
+[2023-10-26 16:03:05,720][HYDRA] Launching 1 jobs locally
+[2023-10-26 16:03:05,720][HYDRA] 	#0 : model=per_class dataset=quaero_medline_bigbio_kb model.pretrained_model_name=Dr-BERT/DrBERT-7GB
+/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/hydra/_internal/core_plugins/basic_launcher.py:74: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+Error executing job with overrides: ['model=per_class', 'dataset=quaero_medline_bigbio_kb', 'model.pretrained_model_name=Dr-BERT/DrBERT-7GB']
+Traceback (most recent call last):
+  File "/home/rtouchen/camembert-bio/camembert_bio/main.py", line 15, in main
+    data = load_dataset("bigbio", cfg.dataset.name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/datasets/load.py", line 2129, in load_dataset
+    builder_instance = load_dataset_builder(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/datasets/load.py", line 1815, in load_dataset_builder
+    dataset_module = dataset_module_factory(
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/datasets/load.py", line 1508, in dataset_module_factory
+    raise FileNotFoundError(
+FileNotFoundError: Couldn't find a dataset script at /home/rtouchen/camembert-bio/multirun/2023-10-26/16-03-05/0/bigbio/bigbio.py or any data file in the same directory. Couldn't find 'bigbio' on the Hugging Face Hub either: FileNotFoundError: Dataset 'bigbio' doesn't exist on the Hub
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

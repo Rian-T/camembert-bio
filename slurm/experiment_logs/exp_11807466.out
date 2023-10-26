@@ -1,0 +1,123 @@
+==========================================
+SLURM_JOB_ID = 1807466
+SLURM_JOB_NODELIST = gpu005
+==========================================
+### Launching Experiment - CamemBERT-bio ###
+Updating dependencies
+Resolving dependencies...
+
+No dependencies to install or update
+
+Writing lock file
+
+Installing the current project: camembert-bio (0.1.0)
+Requirement already satisfied: torch in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (2.1.0)
+Requirement already satisfied: filelock in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (3.12.4)
+Requirement already satisfied: typing-extensions in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (4.8.0)
+Requirement already satisfied: sympy in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (1.12)
+Requirement already satisfied: networkx in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (3.2)
+Requirement already satisfied: jinja2 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (3.1.2)
+Requirement already satisfied: fsspec in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (2023.10.0)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.1.105 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (12.1.105)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.1.105 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (12.1.105)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.1.105 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (12.1.105)
+Requirement already satisfied: nvidia-cudnn-cu12==8.9.2.26 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (8.9.2.26)
+Requirement already satisfied: nvidia-cublas-cu12==12.1.3.1 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (12.1.3.1)
+Requirement already satisfied: nvidia-cufft-cu12==11.0.2.54 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (11.0.2.54)
+Requirement already satisfied: nvidia-curand-cu12==10.3.2.106 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (10.3.2.106)
+Requirement already satisfied: nvidia-cusolver-cu12==11.4.5.107 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (11.4.5.107)
+Requirement already satisfied: nvidia-cusparse-cu12==12.1.0.106 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (12.1.0.106)
+Requirement already satisfied: nvidia-nccl-cu12==2.18.1 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (2.18.1)
+Requirement already satisfied: nvidia-nvtx-cu12==12.1.105 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from torch) (12.1.105)
+Collecting triton==2.1.0 (from torch)
+  Obtaining dependency information for triton==2.1.0 from https://files.pythonhosted.org/packages/5c/c1/54fffb2eb13d293d9a429fead3646752ea190de0229bcf3d591ba2481263/triton-2.1.0-0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata
+  Using cached triton-2.1.0-0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.3 kB)
+Requirement already satisfied: nvidia-nvjitlink-cu12 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from nvidia-cusolver-cu12==11.4.5.107->torch) (12.2.140)
+Requirement already satisfied: MarkupSafe>=2.0 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from jinja2->torch) (2.1.3)
+Requirement already satisfied: mpmath>=0.19 in /home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages (from sympy->torch) (1.3.0)
+Using cached triton-2.1.0-0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (89.2 MB)
+Installing collected packages: triton
+  Attempting uninstall: triton
+    Found existing installation: triton 2.0.0
+    Uninstalling triton-2.0.0:
+      Successfully uninstalled triton-2.0.0
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+xformers 0.0.21 requires torch==2.0.1, but you have torch 2.1.0 which is incompatible.
+Successfully installed triton-2.1.0
+/home/rtouchen/camembert-bio/camembert_bio/main.py:11: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_path="config", config_name="default")
+[2023-10-26 16:15:27,298][HYDRA] Launching 1 jobs locally
+[2023-10-26 16:15:27,298][HYDRA] 	#0 : model=per_class dataset=quaero_medline_bigbio_kb model.pretrained_model_name=Dr-BERT/DrBERT-7GB
+/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/hydra/_internal/core_plugins/basic_launcher.py:74: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json:   0%|          | 0.00/45.7k [00:00<?, ?B/s]Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json: 367kB [00:00, 21.2MB/s]                    
+2023-10-26 16:15:29 INFO: Downloading default packages for language: fr (French) ...
+[2023-10-26 16:15:29,053][stanza][INFO] - Downloading default packages for language: fr (French) ...
+2023-10-26 16:15:30 INFO: File exists: /home/rtouchen/stanza_resources/fr/default.zip
+[2023-10-26 16:15:30,777][stanza][INFO] - File exists: /home/rtouchen/stanza_resources/fr/default.zip
+2023-10-26 16:15:36 INFO: Finished downloading models and saved to /home/rtouchen/stanza_resources.
+[2023-10-26 16:15:36,118][stanza][INFO] - Finished downloading models and saved to /home/rtouchen/stanza_resources.
+2023-10-26 16:15:36 INFO: Checking for updates to resources.json in case models have been updated.  Note: this behavior can be turned off with download_method=None or download_method=DownloadMethod.REUSE_RESOURCES
+[2023-10-26 16:15:36,119][stanza][INFO] - Checking for updates to resources.json in case models have been updated.  Note: this behavior can be turned off with download_method=None or download_method=DownloadMethod.REUSE_RESOURCES
+Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json:   0%|          | 0.00/45.7k [00:00<?, ?B/s]Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json: 367kB [00:00, 21.6MB/s]                    
+2023-10-26 16:15:36 WARNING: Language fr package default expects mwt, which has been added
+[2023-10-26 16:15:36,231][stanza][WARNING] - Language fr package default expects mwt, which has been added
+2023-10-26 16:15:36 INFO: Loading these models for language: fr (French):
+========================
+| Processor | Package  |
+------------------------
+| tokenize  | combined |
+| mwt       | combined |
+========================
+
+[2023-10-26 16:15:36,236][stanza][INFO] - Loading these models for language: fr (French):
+========================
+| Processor | Package  |
+------------------------
+| tokenize  | combined |
+| mwt       | combined |
+========================
+
+2023-10-26 16:15:36 INFO: Using device: cuda
+[2023-10-26 16:15:36,272][stanza][INFO] - Using device: cuda
+2023-10-26 16:15:36 INFO: Loading: tokenize
+[2023-10-26 16:15:36,273][stanza][INFO] - Loading: tokenize
+Error executing job with overrides: ['model=per_class', 'dataset=quaero_medline_bigbio_kb', 'model.pretrained_model_name=Dr-BERT/DrBERT-7GB']
+Traceback (most recent call last):
+  File "/home/rtouchen/camembert-bio/camembert_bio/main.py", line 17, in main
+    preprocessor = NestedPerDepthNERPreprocessor(data, "fr")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/camembert-bio/camembert_bio/data_handling/nested_ner_dataset.py", line 187, in __init__
+    self.nlp = stanza.Pipeline(lang=lang, processors="tokenize")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/stanza/pipeline/core.py", line 299, in __init__
+    self.processors[processor_name] = NAME_TO_PROCESSOR_CLASS[processor_name](config=curr_processor_config,
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/stanza/pipeline/processor.py", line 193, in __init__
+    self._set_up_model(config, pipeline, device)
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/stanza/pipeline/tokenize_processor.py", line 42, in _set_up_model
+    self._trainer = Trainer(model_file=config['model_path'], device=device)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/stanza/models/tokenization/trainer.py", line 28, in __init__
+    self.model = self.model.to(device)
+                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1160, in to
+    return self._apply(convert)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 833, in _apply
+    param_applied = fn(param)
+                    ^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1158, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtouchen/miniconda3/envs/py311/lib/python3.11/site-packages/torch/cuda/__init__.py", line 298, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: The NVIDIA driver on your system is too old (found version 11060). Please update your GPU driver by downloading and installing a new version from the URL: http://www.nvidia.com/Download/index.aspx Alternatively, go to: https://pytorch.org to install a PyTorch version that has been compiled with your version of the CUDA driver.
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.

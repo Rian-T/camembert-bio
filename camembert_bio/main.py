@@ -7,19 +7,20 @@ from models.nested_ner_bert import NestedPerDepthNERModel, NestedPerClassNERMode
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from camembert_bio.evaluation.evaluate_offsets import EvaluationCallback, evaluate_model
+from lightning.pytorch.accelerators import find_usable_cuda_devices
 
-@hydra.main(config_path="config", config_name="config")
+@hydra.main(config_path="config", config_name="default")
 def main(cfg: DictConfig):
     wandb_logger = WandbLogger(name=f"{cfg.model.version}_{cfg.model.pretrained_model_name}_{cfg.dataset.name}", project="camembert_bio")
 
-    data = load_dataset("bigbio", cfg.dataset.name)
+    data = load_dataset(cfg.dataset.path, cfg.dataset.name)
 
     preprocessor = NestedPerDepthNERPreprocessor(data, "fr")
 
     data_train = preprocessor.process_data("train")
     data_val = preprocessor.process_data("validation")
 
-    data_module = NestedNERDataModule(data_train, data_val, batch_size=32, max_length=512, num_workers=2)
+    data_module = NestedNERDataModule(data_train, data_val, batch_size=8, max_length=512, num_workers=2)
 
     model_params = {
         "pretrained_model_name": cfg.model.pretrained_model_name,
@@ -38,10 +39,11 @@ def main(cfg: DictConfig):
     evaluation_callback = EvaluationCallback(test_data=data["test"])
 
     trainer = pl.Trainer(
+        accelerator="gpu",
         max_epochs=cfg.trainer.max_epochs,
         logger=wandb_logger,
-        devices=cfg.trainer.devices,
-        precision=cfg.trainer.precision,
+        devices=find_usable_cuda_devices(1),
+        #precision=cfg.trainer.precision,
         fast_dev_run=cfg.trainer.fast_dev_run,
         callbacks=[evaluation_callback]
     )
