@@ -16,13 +16,8 @@ wandb = "^0.15.12"
 evaluate = "^0.4.0"
 seqeval = "^1.2.2"
 stanza = "^1.6.1"
-<<<<<<< HEAD
 lightning = "^2.1.0"
 bioc = "^2.1"
-=======
-lightning = "^2.0.1"
-torch = {version = "^2.0.1+cu118", source = "pytorch-gpu-src"}
->>>>>>> 8f31ff812dd4dda5f89d6d8d4bbc4567db403e3d
 
 
 [tool.poetry.group.dev.dependencies]
