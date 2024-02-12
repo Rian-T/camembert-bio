@@ -1,0 +1,4 @@
+version: Base
+pretrained_model_name: camembert-base
+learning_rate: 5e-5
+dropout_prob: 0.1

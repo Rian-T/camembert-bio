@@ -1,4 +1,4 @@
 defaults:
   - dataset: medline
-  - model: per_depth
+  - model: mdeberta-bio
   - trainer: default
