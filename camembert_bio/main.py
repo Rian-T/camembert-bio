@@ -25,7 +25,7 @@ def main(cfg: DictConfig):
     data_val = preprocessor.process_data("validation")
     data_test = preprocessor.process_data("test")
 
-    data_module = NERDataModule(data_train, data_val, data_test, batch_size=8, max_length=512, num_workers=2)
+    data_module = NERDataModule(data_train, data_val, data_test, batch_size=16, max_length=512, num_workers=2)
 
     model_params = {
         "pretrained_model_name": cfg.model.pretrained_model_name,

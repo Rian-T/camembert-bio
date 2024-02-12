@@ -1,0 +1,4 @@
+pretrained_model_name: "almanach/camembert-large"
+dropout_prob: 0.1
+weight_decay: 0.1
+version: Base
