@@ -1,4 +1,4 @@
 defaults:
-  - dataset: medline
-  - model: mdeberta-bio
+  - dataset: medline 
+  - model: camembert-large 
   - trainer: default
