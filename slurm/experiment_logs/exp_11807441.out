@@ -1,0 +1,6 @@
+==========================================
+SLURM_JOB_ID = 1807441
+SLURM_JOB_NODELIST = gpu007
+==========================================
+### Training BioMedCamembert ###
+/home/rtouchen/miniconda3/envs/py311/bin/python: can't open file '/home/rtouchen/camembert-bio/main.py': [Errno 2] No such file or directory

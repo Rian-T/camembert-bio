@@ -1,0 +1,14 @@
+==========================================
+SLURM_JOB_ID = 1807476
+SLURM_JOB_NODELIST = gpu005
+==========================================
+### Launching Experiment - CamemBERT-bio ###
+
+EnvironmentNameNotFound: Could not find conda environment: py311
+You can list all discoverable environments with `conda info --envs`.
+
+
+The currently activated Python version 3.9.16 is not supported by the project (^3.10).
+Trying to find and use a compatible version. 
+
+Poetry was unable to find a compatible version. If you have one, you can explicitly use it via the "env use" command.

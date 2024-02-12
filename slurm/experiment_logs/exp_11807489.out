@@ -1,0 +1,167 @@
+==========================================
+SLURM_JOB_ID = 1807489
+SLURM_JOB_NODELIST = gpu001
+==========================================
+### Launching Experiment - CamemBERT-bio ###
+/home/rtouchen/camembert-bio/camembert_bio/main.py:12: UserWarning: 
+The version_base parameter is not specified.
+Please specify a compatability version level, or None.
+Will assume defaults for version 1.1
+  @hydra.main(config_path="config", config_name="default")
+[2023-10-26 18:03:25,840][HYDRA] Launching 1 jobs locally
+[2023-10-26 18:03:25,840][HYDRA] 	#0 : model=per_class dataset=quaero_medline_bigbio_kb model.pretrained_model_name=Dr-BERT/DrBERT-7GB
+/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/hydra/_internal/core_plugins/basic_launcher.py:74: UserWarning: Future Hydra versions will no longer change working directory at job runtime by default.
+See https://hydra.cc/docs/1.2/upgrades/1.1_to_1.2/changes_to_job_working_dir/ for more information.
+  ret = run_job(
+Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json:   0%|          | 0.00/45.7k [00:00<?, ?B/s]Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json: 367kB [00:00, 22.0MB/s]                    
+2023-10-26 18:03:27 INFO: Downloading default packages for language: fr (French) ...
+[2023-10-26 18:03:27,645][stanza][INFO] - Downloading default packages for language: fr (French) ...
+2023-10-26 18:03:28 INFO: File exists: /home/rtouchen/stanza_resources/fr/default.zip
+[2023-10-26 18:03:28,737][stanza][INFO] - File exists: /home/rtouchen/stanza_resources/fr/default.zip
+2023-10-26 18:03:34 INFO: Finished downloading models and saved to /home/rtouchen/stanza_resources.
+[2023-10-26 18:03:34,363][stanza][INFO] - Finished downloading models and saved to /home/rtouchen/stanza_resources.
+2023-10-26 18:03:34 INFO: Checking for updates to resources.json in case models have been updated.  Note: this behavior can be turned off with download_method=None or download_method=DownloadMethod.REUSE_RESOURCES
+[2023-10-26 18:03:34,365][stanza][INFO] - Checking for updates to resources.json in case models have been updated.  Note: this behavior can be turned off with download_method=None or download_method=DownloadMethod.REUSE_RESOURCES
+Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json:   0%|          | 0.00/45.7k [00:00<?, ?B/s]Downloading https://raw.githubusercontent.com/stanfordnlp/stanza-resources/main/resources_1.6.0.json: 367kB [00:00, 21.9MB/s]                    
+2023-10-26 18:03:34 WARNING: Language fr package default expects mwt, which has been added
+[2023-10-26 18:03:34,478][stanza][WARNING] - Language fr package default expects mwt, which has been added
+2023-10-26 18:03:34 INFO: Loading these models for language: fr (French):
+========================
+| Processor | Package  |
+------------------------
+| tokenize  | combined |
+| mwt       | combined |
+========================
+
+[2023-10-26 18:03:34,482][stanza][INFO] - Loading these models for language: fr (French):
+========================
+| Processor | Package  |
+------------------------
+| tokenize  | combined |
+| mwt       | combined |
+========================
+
+2023-10-26 18:03:34 INFO: Using device: cuda
+[2023-10-26 18:03:34,500][stanza][INFO] - Using device: cuda
+2023-10-26 18:03:34 INFO: Loading: tokenize
+[2023-10-26 18:03:34,500][stanza][INFO] - Loading: tokenize
+2023-10-26 18:03:36 INFO: Loading: mwt
+[2023-10-26 18:03:36,779][stanza][INFO] - Loading: mwt
+2023-10-26 18:03:36 INFO: Done loading processors!
+[2023-10-26 18:03:36,785][stanza][INFO] - Done loading processors!
+Some weights of CamembertModel were not initialized from the model checkpoint at Dr-BERT/DrBERT-7GB and are newly initialized: ['roberta.pooler.dense.weight', 'roberta.pooler.dense.bias']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/lightning_fabric/plugins/environments/slurm.py:191: The `srun` command is available on your system but is not used. HINT: If your intention is to run Lightning on SLURM, prepend your python command with `srun` like so: srun python camembert_bio/main.py model=per_class dataset=quaero ...
+INFO: GPU available: True (cuda), used: True
+[2023-10-26 18:03:52,495][lightning.pytorch.utilities.rank_zero][INFO] - GPU available: True (cuda), used: True
+INFO: TPU available: False, using: 0 TPU cores
+[2023-10-26 18:03:52,530][lightning.pytorch.utilities.rank_zero][INFO] - TPU available: False, using: 0 TPU cores
+INFO: IPU available: False, using: 0 IPUs
+[2023-10-26 18:03:52,530][lightning.pytorch.utilities.rank_zero][INFO] - IPU available: False, using: 0 IPUs
+INFO: HPU available: False, using: 0 HPUs
+[2023-10-26 18:03:52,530][lightning.pytorch.utilities.rank_zero][INFO] - HPU available: False, using: 0 HPUs
+wandb: Currently logged in as: rntc (clinical-dream-team). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.15.12
+wandb: Run data is saved locally in ./wandb/run-20231026_180353-uj40p8hv
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run PerClass_Dr-BERT/DrBERT-7GB_quaero_medline_bigbio_kb
+wandb: ⭐️ View project at https://wandb.ai/clinical-dream-team/camembert_bio
+wandb: 🚀 View run at https://wandb.ai/clinical-dream-team/camembert_bio/runs/uj40p8hv
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [1]
+
+  | Name                  | Type           | Params
+---------------------------------------------------------
+0 | bert                  | CamembertModel | 110 M 
+1 | common_layer          | Linear         | 590 K 
+2 | dropout               | Dropout        | 0     
+3 | activation            | ReLU           | 0     
+4 | prediction_layers     | ModuleList     | 48.4 K
+5 | representation_layers | ModuleList     | 12.4 M
+---------------------------------------------------------
+123 M     Trainable params
+0         Non-trainable params
+123 M     Total params
+494.654   Total estimated model params size (MB)
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/torch/utils/data/dataloader.py:557: UserWarning: This DataLoader will create 2 worker processes in total. Our suggested max number of worker in current system is 1, which is smaller than what this DataLoader is going to create. Please be aware that excessive worker creation might get DataLoader running slow or even freeze, lower the worker number to avoid potential slowness/freeze if necessary.
+  warnings.warn(_create_warning_msg(
+Sanity Checking:   0%|          | 0/2 [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]/opt/conda/conda-bld/pytorch_1695392020201/work/aten/src/ATen/native/cuda/Loss.cu:250: nll_loss_forward_reduce_cuda_kernel_2d: block: [0,0,0], thread: [1,0,0] Assertion `t >= 0 && t < n_classes` failed.
+/opt/conda/conda-bld/pytorch_1695392020201/work/aten/src/ATen/native/cuda/Loss.cu:250: nll_loss_forward_reduce_cuda_kernel_2d: block: [0,0,0], thread: [8,0,0] Assertion `t >= 0 && t < n_classes` failed.
+/opt/conda/conda-bld/pytorch_1695392020201/work/aten/src/ATen/native/cuda/Loss.cu:250: nll_loss_forward_reduce_cuda_kernel_2d: block: [0,0,0], thread: [9,0,0] Assertion `t >= 0 && t < n_classes` failed.
+/opt/conda/conda-bld/pytorch_1695392020201/work/aten/src/ATen/native/cuda/Loss.cu:250: nll_loss_forward_reduce_cuda_kernel_2d: block: [0,0,0], thread: [10,0,0] Assertion `t >= 0 && t < n_classes` failed.
+/opt/conda/conda-bld/pytorch_1695392020201/work/aten/src/ATen/native/cuda/Loss.cu:250: nll_loss_forward_reduce_cuda_kernel_2d: block: [0,0,0], thread: [11,0,0] Assertion `t >= 0 && t < n_classes` failed.
+/opt/conda/conda-bld/pytorch_1695392020201/work/aten/src/ATen/native/cuda/Loss.cu:250: nll_loss_forward_reduce_cuda_kernel_2d: block: [0,0,0], thread: [12,0,0] Assertion `t >= 0 && t < n_classes` failed.
+/opt/conda/conda-bld/pytorch_1695392020201/work/aten/src/ATen/native/cuda/Loss.cu:250: nll_loss_forward_reduce_cuda_kernel_2d: block: [0,0,0], thread: [13,0,0] Assertion `t >= 0 && t < n_classes` failed.
+Error executing job with overrides: ['model=per_class', 'dataset=quaero_medline_bigbio_kb', 'model.pretrained_model_name=Dr-BERT/DrBERT-7GB']
+Traceback (most recent call last):
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 44, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 581, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 990, in _run
+    results = self._run_stage()
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1034, in _run_stage
+    self._run_sanity_check()
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1063, in _run_sanity_check
+    val_loop.run()
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/loops/utilities.py", line 181, in _decorator
+    return loop_run(self, *args, **kwargs)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 134, in run
+    self._evaluation_step(batch, batch_idx, dataloader_idx, dataloader_iter)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 391, in _evaluation_step
+    output = call._call_strategy_hook(trainer, hook_name, *step_args)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 309, in _call_strategy_hook
+    output = fn(*args, **kwargs)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 403, in validation_step
+    return self.lightning_module.validation_step(*args, **kwargs)
+  File "/home/rtouchen/camembert-bio/camembert_bio/models/nested_ner_bert.py", line 89, in validation_step
+    all_preds = [self.logits_to_tags(logit, self.id2label) for logit in logits]
+  File "/home/rtouchen/camembert-bio/camembert_bio/models/nested_ner_bert.py", line 89, in <listcomp>
+    all_preds = [self.logits_to_tags(logit, self.id2label) for logit in logits]
+  File "/home/rtouchen/camembert-bio/camembert_bio/models/nested_ner_bert.py", line 79, in logits_to_tags
+    tag_ids = torch.argmax(logits, dim=-1).cpu().numpy()
+RuntimeError: CUDA error: device-side assert triggered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rtouchen/camembert-bio/camembert_bio/main.py", line 51, in main
+    trainer.fit(model, data_module)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 545, in fit
+    call._call_and_handle_interrupt(
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 68, in _call_and_handle_interrupt
+    trainer._teardown()
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1013, in _teardown
+    self.strategy.teardown()
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 528, in teardown
+    self.lightning_module.cpu()
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/lightning_fabric/utilities/device_dtype_mixin.py", line 79, in cpu
+    return super().cpu()
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 967, in cpu
+    return self._apply(lambda t: t.cpu())
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 810, in _apply
+    module._apply(fn)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 833, in _apply
+    param_applied = fn(param)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/torch/nn/modules/module.py", line 967, in <lambda>
+    return self._apply(lambda t: t.cpu())
+RuntimeError: CUDA error: device-side assert triggered
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
+wandb: Waiting for W&B process to finish... (failed 1). Press Control-C to abort syncing.
+wandb: - 0.087 MB of 0.087 MB uploaded (0.000 MB deduped)wandb: \ 0.087 MB of 0.087 MB uploaded (0.000 MB deduped)wandb: | 0.087 MB of 0.087 MB uploaded (0.000 MB deduped)wandb: / 0.087 MB of 0.087 MB uploaded (0.000 MB deduped)wandb: 🚀 View run PerClass_Dr-BERT/DrBERT-7GB_quaero_medline_bigbio_kb at: https://wandb.ai/clinical-dream-team/camembert_bio/runs/uj40p8hv
+wandb: ️⚡ View job at https://wandb.ai/clinical-dream-team/camembert_bio/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExMDEzNTI2Ng==/version_details/v6
+wandb: Synced 7 W&B file(s), 0 media file(s), 0 artifact file(s) and 1 other file(s)
+wandb: Find logs at: ./wandb/run-20231026_180353-uj40p8hv/logs
+                                                                   

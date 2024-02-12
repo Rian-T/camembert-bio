@@ -44,9 +44,10 @@ def main(cfg: DictConfig):
     #evaluation_callback = EvaluationCallback(test_data=data["test"])
 
     trainer = pl.Trainer(
+        accelerator="gpu",
         max_epochs=cfg.trainer.max_epochs,
         logger=wandb_logger,
-        devices=cfg.trainer.devices,
+        #devices=find_usable_cuda_devices(1),
         precision=cfg.trainer.precision,
         fast_dev_run=cfg.trainer.fast_dev_run,
         #callbacks=[evaluation_callback],

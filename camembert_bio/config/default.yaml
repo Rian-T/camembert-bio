@@ -1,0 +1,4 @@
+defaults:
+  - dataset: quaero_medline_bigbio_kb
+  - model: per_depth
+  - trainer: default
