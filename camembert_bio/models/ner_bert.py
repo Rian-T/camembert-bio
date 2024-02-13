@@ -10,33 +10,29 @@ import stanza
 from camembert_bio.utils.offsets_evaluation import tags_to_entities_with_offsets
 
 class NERModel(pl.LightningModule):
-    def __init__(self, id2label, pretrained_model_name="camembert-base", learning_rate=5e-5, dropout_prob=0.1, train_head=True):
+    def __init__(self, id2label, pretrained_model_name="camembert-base", learning_rate=5e-5, dropout_prob=0.1, train_head_only=False):
         super(NERModel, self).__init__()
         
         self.id2label = id2label
         self.learning_rate = learning_rate
         self.nlp = stanza.Pipeline(lang='fr', processors='tokenize')
         self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
-        self.train_head = train_head
+        self.train_head_only = train_head_only
 
-        if train_head:
-            self.bert = AutoModel.from_pretrained(pretrained_model_name)
-            self.dropout = nn.Dropout(dropout_prob)
-            self.classifier = nn.Linear(self.bert.config.hidden_size, len(id2label))
-        else:
-            self.bert = AutoModelForTokenClassification.from_pretrained(pretrained_model_name)
+        self.bert = AutoModelForTokenClassification.from_pretrained(pretrained_model_name, num_labels=len(id2label))
+
+        if train_head_only:
+            # Freeze BERT or RoBERTa layers
+            if hasattr(self, "roberta"):
+                for param in self.roberta.parameters():
+                    param.requires_grad = False
+            else:
+                for param in self.bert.parameters():
+                    param.requires_grad = False
 
     def forward(self, input_ids, attention_mask=None):
         outputs = self.bert(input_ids, attention_mask=attention_mask)
-
-        if hasattr(self, 'classifier'):
-            # Vanilla BERT case
-            sequence_output = self.dropout(outputs[0])
-            logits = self.classifier(sequence_output)
-        else:
-            # BERT with classification head case
-            logits = outputs.logits
-
+        logits = outputs.logits
         return logits
 
     def compute_loss(self, logits, labels):
@@ -63,10 +59,10 @@ class NERModel(pl.LightningModule):
         preds = self.logits_to_tags(logits)
         labels = self.labels_to_tags(labels)
 
-        self.log("train_loss", loss)
-        self.log("train_precision", precision_score(labels, preds))
-        self.log("train_recall", recall_score(labels, preds))
-        self.log("train_f1", f1_score(labels, preds))
+        self.log("train/loss", loss)
+        self.log("train/precision", precision_score(labels, preds))
+        self.log("train/recall", recall_score(labels, preds))
+        self.log("train/f1", f1_score(labels, preds))
 
         return loss
 
@@ -79,12 +75,28 @@ class NERModel(pl.LightningModule):
         preds = self.logits_to_tags(logits)
         labels = self.labels_to_tags(labels)
 
-        self.log("val_loss", val_loss)
-        self.log("val_precision", precision_score(labels, preds))
-        self.log("val_recall", recall_score(labels, preds))
-        self.log("val_f1", f1_score(labels, preds))
+        self.log("val/loss", val_loss)
+        self.log("val/precision", precision_score(labels, preds))
+        self.log("val/recall", recall_score(labels, preds))
+        self.log("val/f1", f1_score(labels, preds))
 
         return val_loss
+    
+    def test_step(self, batch, batch_idx):
+        input_ids, attention_mask, labels = batch
+        logits = self(input_ids, attention_mask)
+        test_loss = self.compute_loss(logits, labels)
+
+        # Compute metrics
+        preds = self.logits_to_tags(logits)
+        labels = self.labels_to_tags(labels)
+
+        self.log("test/loss", test_loss)
+        self.log("test/precision", precision_score(labels, preds))
+        self.log("test/recall", recall_score(labels, preds))
+        self.log("test/f1", f1_score(labels, preds))
+
+        return test_loss
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)

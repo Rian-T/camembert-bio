@@ -1,4 +1,4 @@
-max_epochs: 20
+max_epochs: 15
 devices: 1
 precision: "16-mixed"
 fast_dev_run: false

@@ -8,6 +8,7 @@ from models.nested_ner_bert import NestedPerDepthNERModel, NestedPerClassNERMode
 from models.ner_bert import NERModel
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import ModelCheckpoint
 from camembert_bio.evaluation.evaluate_offsets import EvaluationCallback, evaluate_model
 import logging
 
@@ -25,7 +26,7 @@ def main(cfg: DictConfig):
     data_val = preprocessor.process_data("validation")
     data_test = preprocessor.process_data("test")
 
-    data_module = NERDataModule(data_train, data_val, data_test, batch_size=16, max_length=512, num_workers=2)
+    data_module = NERDataModule(data_train, data_val, tokenizer_name=cfg.model.pretrained_model_name, test_data=data_test, batch_size=32, max_length=512, num_workers=2)
 
     model_params = {
         "pretrained_model_name": cfg.model.pretrained_model_name,
@@ -42,6 +43,7 @@ def main(cfg: DictConfig):
         model = NERModel(**model_params)
 
     #evaluation_callback = EvaluationCallback(test_data=data["test"])
+    checkpoint_callback = ModelCheckpoint(monitor='val/loss', dirpath='../outputs/checkpoints', mode='min', save_top_k=1)
 
     trainer = pl.Trainer(
         accelerator="gpu",
@@ -50,11 +52,12 @@ def main(cfg: DictConfig):
         #devices=find_usable_cuda_devices(1),
         precision=cfg.trainer.precision,
         fast_dev_run=cfg.trainer.fast_dev_run,
-        #callbacks=[evaluation_callback],
+        log_every_n_steps=10,
+        callbacks=[checkpoint_callback],
     )
 
     trainer.fit(model, data_module)
-    trainer.test(model, data_module)
+    trainer.test(model, data_module, ckpt_path=checkpoint_callback.best_model_path)
     #test = data["test"]
     #results = evaluate_model(model, test)
     #wandb_logger.log_metrics(results)
