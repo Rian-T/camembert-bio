@@ -1,0 +1,4 @@
+pretrained_model_name: "Dr-BERT/DrBERT-7GB"
+learning_rate: 5e-5
+dropout_prob: 0.1
+version: Base

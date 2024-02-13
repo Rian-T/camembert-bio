@@ -7,41 +7,57 @@ from torch.utils.data import DataLoader
 import stanza
 
 class NERDataset(Dataset):
-    def __init__(self, data, tokenizer, max_length=512):
-        self.data = data
+    def __init__(self, data, tokenizer, max_length=512, label_all_tokens=False):
         self.tokenizer = tokenizer
         self.max_length = max_length
+        self.label_all_tokens = label_all_tokens
+        self.setup(data)
 
-    def __len__(self):
-        return len(self.data)
+    def setup(self, data):
+        self.data = []
+        
+        keys = data[0].keys()
+        flatten_data = {key: [d[key] for d in data] for key in keys}
 
-    def __getitem__(self, idx):
-        item = self.data[idx]
-        text = item["tokens"]
-        labels_layers = [item[key] for key in item.keys() if "ner_tags" in key]
-
-        encoding = self.tokenizer(
-            text,
+        tokenized_inputs = self.tokenizer(
+            flatten_data["tokens"],
             is_split_into_words=True,
             truncation=True,
             padding="max_length",
             max_length=self.max_length,
             return_tensors="pt",
         )
-        input_ids = encoding["input_ids"].squeeze()
-        attention_mask = encoding["attention_mask"].squeeze()
-
-        labels_tensors = []
-        for labels in labels_layers:
-            adjusted_labels = []
-            for word_idx in encoding.word_ids(batch_index=0):
+        
+        labels = []
+        for i, label in enumerate(flatten_data[f"ner_tags"]):
+            word_ids = tokenized_inputs.word_ids(batch_index=i)
+            previous_word_idx = None
+            label_ids = []
+            for word_idx in word_ids:
                 if word_idx is None:
-                    adjusted_labels.append(-100)
+                    label_ids.append(-100)
+                elif word_idx != previous_word_idx:
+                    label_ids.append(label[word_idx])
                 else:
-                    adjusted_labels.append(labels[word_idx])
-            labels_tensors.append(torch.tensor(adjusted_labels[: self.max_length]))
+                    label_ids.append(label[word_idx] if self.label_all_tokens else -100)
+                previous_word_idx = word_idx
+            labels.append(label_ids)
+        tokenized_inputs["labels"] = torch.tensor(labels)
+        
+        self.data = [
+            (
+                tokenized_inputs.input_ids[i],
+                tokenized_inputs.attention_mask[i],
+                tokenized_inputs.labels[i],
+            )
+            for i in range(len(data))
+        ]
 
-        return (input_ids, attention_mask, *labels_tensors)
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx]
 
 class NERDataModule(pl.LightningDataModule):
     def __init__(

@@ -3,7 +3,10 @@ from omegaconf import DictConfig
 import wandb
 from datasets import load_dataset
 from data_handling.ner_dataset import NERPreprocessor, NERDataModule
-from data_handling.nested_ner_dataset import NestedPerDepthNERPreprocessor, NestedNERDataModule 
+from data_handling.nested_ner_dataset import (
+    NestedPerDepthNERPreprocessor,
+    NestedNERDataModule,
+)
 from models.nested_ner_bert import NestedPerDepthNERModel, NestedPerClassNERModel
 from models.ner_bert import NERModel
 import pytorch_lightning as pl
@@ -12,11 +15,15 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from camembert_bio.evaluation.evaluate_offsets import EvaluationCallback, evaluate_model
 import logging
 
-logging.getLogger('stanza').setLevel(logging.ERROR)
+logging.getLogger("stanza").setLevel(logging.ERROR)
+
 
 @hydra.main(config_path="../config", config_name="default", version_base="1.1")
 def main(cfg: DictConfig):
-    wandb_logger = WandbLogger(name=f"{cfg.model.version}_{cfg.model.pretrained_model_name}_{cfg.dataset.name}", project="camembert_bio")
+    wandb_logger = WandbLogger(
+        name=f"{cfg.model.version}_{cfg.model.pretrained_model_name}_{cfg.dataset.name}",
+        project="camembert_bio",
+    )
 
     data = load_dataset("bigbio/quaero", cfg.dataset.name)
 
@@ -26,30 +33,42 @@ def main(cfg: DictConfig):
     data_val = preprocessor.process_data("validation")
     data_test = preprocessor.process_data("test")
 
-    data_module = NERDataModule(data_train, data_val, tokenizer_name=cfg.model.pretrained_model_name, test_data=data_test, batch_size=32, max_length=512, num_workers=2)
+    data_module = NERDataModule(
+        data_train,
+        data_val,
+        tokenizer_name=cfg.model.pretrained_model_name,
+        test_data=data_test,
+        batch_size=8,
+        max_length=512,
+        num_workers=2,
+    )
 
     model_params = {
         "pretrained_model_name": cfg.model.pretrained_model_name,
         "learning_rate": cfg.model.learning_rate,
         "dropout_prob": cfg.model.dropout_prob,
-        "id2label": preprocessor.id2label
+        "id2label": preprocessor.id2label,
     }
 
     if cfg.model.version == "PerDepth":
-        model = NestedPerDepthNERModel(**model_params, n_depth=preprocessor.n_layers, stack_depths=True)
+        model = NestedPerDepthNERModel(
+            **model_params, n_depth=preprocessor.n_layers, stack_depths=True
+        )
     elif cfg.model.version == "PerClass":
         model = NestedPerClassNERModel(**model_params, stack_classes=True)
     else:
         model = NERModel(**model_params)
 
-    #evaluation_callback = EvaluationCallback(test_data=data["test"])
-    checkpoint_callback = ModelCheckpoint(monitor='val/loss', dirpath='../outputs/checkpoints', mode='min', save_top_k=1)
+    # evaluation_callback = EvaluationCallback(test_data=data["test"])
+    checkpoint_callback = ModelCheckpoint(
+        monitor="val/loss", dirpath="../outputs/checkpoints", mode="min", save_top_k=1
+    )
 
     trainer = pl.Trainer(
         accelerator="gpu",
         max_epochs=cfg.trainer.max_epochs,
         logger=wandb_logger,
-        #devices=find_usable_cuda_devices(1),
+        # devices=find_usable_cuda_devices(1),
         precision=cfg.trainer.precision,
         fast_dev_run=cfg.trainer.fast_dev_run,
         log_every_n_steps=10,
@@ -58,9 +77,10 @@ def main(cfg: DictConfig):
 
     trainer.fit(model, data_module)
     trainer.test(model, data_module, ckpt_path=checkpoint_callback.best_model_path)
-    #test = data["test"]
-    #results = evaluate_model(model, test)
-    #wandb_logger.log_metrics(results)
+    # test = data["test"]
+    # results = evaluate_model(model, test)
+    # wandb_logger.log_metrics(results)
+
 
 if __name__ == "__main__":
     main()
