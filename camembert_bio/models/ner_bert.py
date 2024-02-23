@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from transformers import AutoModel, AutoTokenizer, AutoModelForTokenClassification
-from seqeval.metrics import f1_score, precision_score, recall_score
+import evaluate
+from seqeval.metrics import classification_report
 from seqeval.scheme import IOB2
-import seqeval
 import stanza
 
 from camembert_bio.utils.offsets_evaluation import tags_to_entities_with_offsets
@@ -24,9 +24,13 @@ class NERModel(pl.LightningModule):
 
         self.id2label = id2label
         self.learning_rate = learning_rate
-        self.nlp = stanza.Pipeline(lang="fr", processors="tokenize")
+        #self.nlp = stanza.Pipeline(lang="fr", processors="tokenize")
         self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
         self.train_head_only = train_head_only
+
+        self.seqeval = evaluate.load("seqeval")
+
+        self.test_step_outputs = []
 
         self.bert = AutoModelForTokenClassification.from_pretrained(
             pretrained_model_name, num_labels=len(id2label)
@@ -41,6 +45,7 @@ class NERModel(pl.LightningModule):
                 for param in self.bert.parameters():
                     param.requires_grad = False
 
+
     def forward(self, input_ids, attention_mask=None):
         outputs = self.bert(input_ids, attention_mask=attention_mask)
         logits = outputs.logits
@@ -48,7 +53,7 @@ class NERModel(pl.LightningModule):
 
     def compute_loss(self, logits, labels):
         return F.cross_entropy(
-            logits.view(-1, len(self.id2label)), labels.view(-1), ignore_index=-100
+            logits.view(-1, logits.shape[-1]), labels.view(-1), ignore_index=-100
         )
 
     def logits_to_tags(self, logits):
@@ -68,6 +73,7 @@ class NERModel(pl.LightningModule):
 
     def compute_metrics(self, preds, labels):
         predictions = torch.argmax(preds, dim=2).cpu().numpy()
+        labels = labels.cpu().numpy()
 
         true_predictions = [
             [self.id2label[p] for (p, l) in zip(prediction, label) if l != -100]
@@ -78,12 +84,21 @@ class NERModel(pl.LightningModule):
             for prediction, label in zip(predictions, labels)
         ]
 
-        results = seqeval.compute(predictions=true_predictions, references=true_labels)
+        results = classification_report(true_labels, true_predictions, output_dict=True, zero_division=0, mode="strict", scheme=IOB2)
+
         return {
-            "precision": results["overall_precision"],
-            "recall": results["overall_recall"],
-            "f1": results["overall_f1"],
-            "accuracy": results["overall_accuracy"],
+            "micro/precision": results["micro avg"]["precision"],
+            "micro/recall": results["micro avg"]["recall"],
+            "micro/f1": results["micro avg"]["f1-score"],
+            "micro/accuracy": results["micro avg"]["precision"],
+            "macro/precision": results["macro avg"]["precision"],
+            "macro/recall": results["macro avg"]["recall"],
+            "macro/f1": results["macro avg"]["f1-score"],
+            "macro/accuracy": results["macro avg"]["precision"],
+            "weighted/precision": results["weighted avg"]["precision"],
+            "weighted/recall": results["weighted avg"]["recall"],
+            "weighted/f1": results["weighted avg"]["f1-score"],
+            "weighted/accuracy": results["weighted avg"]["precision"]
         }
 
     def training_step(self, batch, batch_idx):
@@ -92,16 +107,13 @@ class NERModel(pl.LightningModule):
         loss = self.compute_loss(logits, labels)
 
         # Compute metrics
-        precision, recall, f1, accuracy = self.compute_metrics(logits, labels)        
+        metrics = self.compute_metrics(logits, labels)        
 
-        self.log("train/loss", loss)
-        self.log("train/precision", precision)
-        self.log("train/recall", recall)
-        self.log("train/f1", f1)
-        self.log("train/accuracy", accuracy)
+        self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log_dict({f"train/{k}": v for k, v in metrics.items()})
         
-
         return loss
+        
 
     def validation_step(self, batch, batch_idx):
         input_ids, attention_mask, labels = batch
@@ -109,13 +121,10 @@ class NERModel(pl.LightningModule):
         val_loss = self.compute_loss(logits, labels)
 
         # Compute metrics
-        precision, recall, f1, accuracy = self.compute_metrics(logits, labels)
+        metrics = self.compute_metrics(logits, labels)
 
-        self.log("val/loss", val_loss)
-        self.log("val/precision", precision)
-        self.log("val/recall", recall)
-        self.log("val/f1", f1)
-        self.log("val/accuracy", accuracy)
+        self.log("val/loss", val_loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log_dict({f"val/{k}": v for k, v in metrics.items()})
 
         return val_loss
 
@@ -124,16 +133,26 @@ class NERModel(pl.LightningModule):
         logits = self(input_ids, attention_mask)
         test_loss = self.compute_loss(logits, labels)
 
-        # Compute metrics
-        precision, recall, f1, accuracy = self.compute_metrics(logits, labels)
+        self.test_step_outputs.append({"predictions": logits, "labels": labels})
+
+        # Return the predictions, labels, and loss
+        return {"predictions": logits, "labels": labels, "loss": test_loss}
+    
+    def on_test_epoch_end(self):
+        # Concatenate all the predictions and labels
+        all_predictions = torch.cat([x["predictions"] for x in self.test_step_outputs], dim=0)
+        all_labels = torch.cat([x["labels"] for x in self.test_step_outputs], dim=0)
+
+        # Compute the loss for the whole dataset
+        test_loss = self.compute_loss(all_predictions, all_labels)
+
+        # Compute the metrics for the whole dataset
+        metrics = self.compute_metrics(all_predictions, all_labels)
 
         self.log("test/loss", test_loss)
-        self.log("test/precision", precision)
-        self.log("test/recall", recall)
-        self.log("test/f1", f1)
-        self.log("test/accuracy", accuracy)
+        self.log_dict({f"test/{k}": v for k, v in metrics.items()})
 
-        return test_loss
+        self.test_step_outputs.clear()
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
