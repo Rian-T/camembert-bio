@@ -1,4 +1,4 @@
-pretrained_model_name: "rntc/mdeberta-bio-v0.1"
+pretrained_model_name: "rntc/mdeberta-bio-v1.1"
 learning_rate: 5e-5
 dropout_prob: 0.1
 version: Base
