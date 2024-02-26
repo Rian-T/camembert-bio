@@ -19,6 +19,9 @@ class NERDataset(Dataset):
         keys = data[0].keys()
         flatten_data = {key: [d[key] for d in data] for key in keys}
 
+        if getattr(self.tokenizer, "pad_token", None) is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+
         tokenized_inputs = self.tokenizer(
             flatten_data["tokens"],
             is_split_into_words=True,
@@ -74,7 +77,7 @@ class NERDataModule(pl.LightningDataModule):
         self.train_data = train_data
         self.val_data = val_data
         self.test_data = test_data
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, add_prefix_space=True)
         self.batch_size = batch_size
         self.max_length = max_length
         self.num_workers = num_workers
@@ -118,7 +121,7 @@ class NERPreprocessor:
                     label_set.add(f"I-{ent['type']}")
 
         label_list = sorted(
-            list(label_set), key=lambda label: (label.split("-")[1], label.split("-")[0])
+            list(label_set)
         )
         label_list.insert(0, "O")
 
@@ -146,7 +149,7 @@ class NERPreprocessor:
                 sorted_entities = sorted(
                     item["entities"],
                     key=lambda entity: entity["offsets"][0][1] - entity["offsets"][0][0],
-                    reverse=False if self.granularity == "smaller-preference" else True,
+                    reverse=True if self.granularity == "smaller-preference" else False,
                 )
 
                 for entity in sorted_entities:

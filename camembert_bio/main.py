@@ -27,7 +27,7 @@ def main(cfg: DictConfig):
 
     data = load_dataset("bigbio/quaero", cfg.dataset.name)
 
-    preprocessor = NERPreprocessor(data, "fr")
+    preprocessor = NERPreprocessor(data, "fr", "smaller-preference")
 
     data_train = preprocessor.process_data("train")
     data_val = preprocessor.process_data("validation")
@@ -38,7 +38,7 @@ def main(cfg: DictConfig):
         data_val,
         tokenizer_name=cfg.model.pretrained_model_name,
         test_data=data_test,
-        batch_size=8,
+        batch_size=cfg.trainer.batch_size,
         max_length=512,
         num_workers=2,
     )
@@ -61,7 +61,7 @@ def main(cfg: DictConfig):
 
     # evaluation_callback = EvaluationCallback(test_data=data["test"])
     checkpoint_callback = ModelCheckpoint(
-        monitor="val/loss", dirpath="../outputs/checkpoints", mode="min", save_top_k=1
+        monitor="val/loss", dirpath="checkpoints", mode="min", save_top_k=1
     )
 
     trainer = pl.Trainer(
@@ -72,6 +72,7 @@ def main(cfg: DictConfig):
         precision=cfg.trainer.precision,
         fast_dev_run=cfg.trainer.fast_dev_run,
         log_every_n_steps=10,
+        accumulate_grad_batches=cfg.trainer.accumulate_grad_batches,
         callbacks=[checkpoint_callback],
     )
 

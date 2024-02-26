@@ -1,0 +1,4 @@
+pretrained_model_name: "microsoft/phi-2"
+learning_rate: 1e-4
+dropout_prob: 0.1
+version: Base
