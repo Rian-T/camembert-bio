@@ -24,12 +24,13 @@ class NERModel(pl.LightningModule):
 
         self.id2label = id2label
         self.learning_rate = learning_rate
-        #self.nlp = stanza.Pipeline(lang="fr", processors="tokenize")
+        # self.nlp = stanza.Pipeline(lang="fr", processors="tokenize")
         self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
         self.train_head_only = train_head_only
 
         self.seqeval = evaluate.load("seqeval")
 
+        self.train_step_outputs = []
         self.test_step_outputs = []
 
         self.bert = AutoModelForTokenClassification.from_pretrained(
@@ -44,7 +45,6 @@ class NERModel(pl.LightningModule):
             else:
                 for param in self.bert.parameters():
                     param.requires_grad = False
-
 
     def forward(self, input_ids, attention_mask=None):
         outputs = self.bert(input_ids, attention_mask=attention_mask)
@@ -72,6 +72,7 @@ class NERModel(pl.LightningModule):
         ]
 
     def compute_metrics(self, preds, labels):
+        # Convert logits to predictions
         predictions = torch.argmax(preds, dim=2).cpu().numpy()
         labels = labels.cpu().numpy()
 
@@ -84,63 +85,66 @@ class NERModel(pl.LightningModule):
             for prediction, label in zip(predictions, labels)
         ]
 
-        results = classification_report(true_labels, true_predictions, output_dict=True, zero_division=0, mode="strict", scheme=IOB2)
+        results = classification_report(
+            true_labels,
+            true_predictions,
+            output_dict=True,
+            zero_division=0,
+            mode="strict",
+            scheme=IOB2,
+        )
+
+        def compute_average_metrics(avg):
+            return {
+                f"{avg}_precision": results[f"{avg} avg"]["precision"],
+                f"{avg}_recall": results[f"{avg} avg"]["recall"],
+                f"{avg}_f1": results[f"{avg} avg"]["f1-score"],
+            }
 
         return {
-            "micro/precision": results["micro avg"]["precision"],
-            "micro/recall": results["micro avg"]["recall"],
-            "micro/f1": results["micro avg"]["f1-score"],
-            "micro/accuracy": results["micro avg"]["precision"],
-            "macro/precision": results["macro avg"]["precision"],
-            "macro/recall": results["macro avg"]["recall"],
-            "macro/f1": results["macro avg"]["f1-score"],
-            "macro/accuracy": results["macro avg"]["precision"],
-            "weighted/precision": results["weighted avg"]["precision"],
-            "weighted/recall": results["weighted avg"]["recall"],
-            "weighted/f1": results["weighted avg"]["f1-score"],
-            "weighted/accuracy": results["weighted avg"]["precision"]
+            **compute_average_metrics("micro"),
+            **compute_average_metrics("macro"),
+            **compute_average_metrics("weighted"),
         }
 
-    def training_step(self, batch, batch_idx):
+    def common_step(self, batch, batch_idx, prefix):
         input_ids, attention_mask, labels = batch
         logits = self(input_ids, attention_mask)
         loss = self.compute_loss(logits, labels)
 
         # Compute metrics
-        metrics = self.compute_metrics(logits, labels)        
-
-        self.log("train/loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        self.log_dict({f"train/{k}": v for k, v in metrics.items()})
-        
-        return loss
-        
-
-    def validation_step(self, batch, batch_idx):
-        input_ids, attention_mask, labels = batch
-        logits = self(input_ids, attention_mask)
-        val_loss = self.compute_loss(logits, labels)
-
-        # Compute metrics
         metrics = self.compute_metrics(logits, labels)
 
-        self.log("val/loss", val_loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        self.log_dict({f"val/{k}": v for k, v in metrics.items()})
+        self.log(
+            f"{prefix}/loss",
+            loss,
+            on_step=True,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+        )
+        self.log_dict({f"{prefix}/{k}": v for k, v in metrics.items()})
 
-        return val_loss
+        return loss, logits, labels
+
+    def training_step(self, batch, batch_idx):
+        loss, _, _ = self.common_step(batch, batch_idx, "train")
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        loss, _, _ = self.common_step(batch, batch_idx, "val")
+        return loss
 
     def test_step(self, batch, batch_idx):
-        input_ids, attention_mask, labels = batch
-        logits = self(input_ids, attention_mask)
-        test_loss = self.compute_loss(logits, labels)
-
+        loss, logits, labels = self.common_step(batch, batch_idx, "test")
         self.test_step_outputs.append({"predictions": logits, "labels": labels})
+        return {"predictions": logits, "labels": labels, "loss": loss}
 
-        # Return the predictions, labels, and loss
-        return {"predictions": logits, "labels": labels, "loss": test_loss}
-    
     def on_test_epoch_end(self):
         # Concatenate all the predictions and labels
-        all_predictions = torch.cat([x["predictions"] for x in self.test_step_outputs], dim=0)
+        all_predictions = torch.cat(
+            [x["predictions"] for x in self.test_step_outputs], dim=0
+        )
         all_labels = torch.cat([x["labels"] for x in self.test_step_outputs], dim=0)
 
         # Compute the loss for the whole dataset

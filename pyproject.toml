@@ -18,6 +18,9 @@ seqeval = "^1.2.2"
 stanza = "^1.6.1"
 lightning = "^2.1.0"
 bioc = "^2.1"
+bitsandbytes = "^0.42.0"
+packaging = "^23.2"
+vllm = "^0.3.2"
 
 
 [tool.poetry.group.dev.dependencies]

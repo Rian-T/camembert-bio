@@ -1,3 +1,7 @@
+# checkpointing
+**/checkpoints/
+**/outputs
+
 # logging
 **/lightning_logs/
 **/wandb/

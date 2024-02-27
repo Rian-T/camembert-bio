@@ -18,16 +18,16 @@ import logging
 logging.getLogger("stanza").setLevel(logging.ERROR)
 
 
-@hydra.main(config_path="../config", config_name="default", version_base="1.1")
+@hydra.main(config_path="../config", config_name="default", version_base="1.2")
 def main(cfg: DictConfig):
     wandb_logger = WandbLogger(
         name=f"{cfg.model.version}_{cfg.model.pretrained_model_name}_{cfg.dataset.name}",
         project="camembert_bio",
     )
 
-    data = load_dataset("bigbio/quaero", cfg.dataset.name)
+    data = load_dataset(cfg.dataset.name , cfg.dataset.config_name)
 
-    preprocessor = NERPreprocessor(data, "fr", "smaller-preference")
+    preprocessor = NERPreprocessor(data, "en", "smaller-preference")
 
     data_train = preprocessor.process_data("train")
     data_val = preprocessor.process_data("validation")

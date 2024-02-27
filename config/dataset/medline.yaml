@@ -1,1 +1,2 @@
-name: quaero_medline_bigbio_kb
+name: bigbio/quaero
+config_name: quaero_medline_bigbio_kb

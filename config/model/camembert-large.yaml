@@ -1,5 +1,5 @@
 pretrained_model_name: "almanach/camembert-large"
 dropout_prob: 0.1
-learning_rate: 1e-5
-train_head_only: True
+learning_rate: 8e-5
+train_head_only: False
 version: Base
