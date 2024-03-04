@@ -9,6 +9,8 @@ import pandas as pd
 
 from tqdm import tqdm
 from datasets import load_dataset, Dataset, load_from_disk
+from langchain.retrievers import PubMedRetriever
+
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 COT_PROMPTS = {
@@ -662,9 +664,39 @@ def aggregate_datasets(path, subsets, partition='train'):
     return aggregate
 
 
+def get_context(retriever, query, n=2, truncation=500):
+    results = retriever.get_relevant_documents("chatgpt")
+    results_content = " ".join([result.page_content for result in results])
+    return "\nAdditionnal knowledge: " + results_content[:truncation] + "\n"
+
+def find_revelant_context(prompt):
+    context = prompt.split('\n')[-1]
+    return get_context(context)
+
+def insert_text_before_line(original_text, line_to_find, text_to_insert):
+    """
+    This function inserts a text at a specific line in a string.
+
+    Args:
+        original_text (str): The original text.
+        line_to_find (str): The line before which the text should be inserted.
+        text_to_insert (str): The text to insert.
+
+    Returns:
+        str: The modified text.
+    """
+    lines = original_text.split('\n')
+    for i, line in enumerate(lines):
+        if line.strip() == line_to_find:
+            lines.insert(i, text_to_insert)
+            break
+    return '\n'.join(lines)
+
 def main():
     # test all benchmarks
-    benchmark = ["medmcqa", "pubmedqa",  "medqa4", "blurb", "mmlu_medical", "gsm8k"]
+    # benchmark = ["medmcqa", "pubmedqa",  "medqa4", "blurb", "mmlu_medical", "gsm8k"]
+    benchmark = ["medqa4"]
+    retriever = PubMedRetriever()
     for b in benchmark:
         print("Testing benchmark: ", b)
         benchmark = benchmark_factory(b)
@@ -672,16 +704,31 @@ def main():
         benchmark.load_data("test")
         benchmark.preprocessing('train')
         benchmark.preprocessing('test')
-        benchmark.add_few_shot(shots=3)
         benchmark.add_instruction(load_instruction(b if not "medqa4" else "medqa"), partition='test')
+        #benchmark.add_few_shot(shots=3)
         print(benchmark.test_data)
         # pretty print prompt and gold
-        for i in range(3):
-            print("Prompt: \n", benchmark.test_data[i]['prompt'])
+        for i in range(100):
+            #print("Prompt: \n", benchmark.test_data[i]['prompt'])
             print("Gold: \n", benchmark.test_data[i]['gold'])
+            #print("Global facts: \n", benchmark.test_data[i])
             print("\n")
         print("="*50)
         print("\n\n")
+        # for i in range(1):
+        #     prompt = benchmark.test_data[i]["prompt"]
+        #     print("Prompt: \n", prompt)
+        #     #print(prompt.split('\n'))
+        #     #print(prompt.split('\n')[-2])
+        #     print("subject", prompt.split('\n')[-3])
+        #     subject = prompt.split('\n')[-3]
+        #     print("Subject:", subject)
+        #     print("Context:", get_context(retriever, subject))
+        #     context = get_context(retriever, subject)
+        #     prompt = insert_text_before_line(prompt, "The answer is:", context)
+        #     print("New prompt:", prompt)
+        #     print("="*50)
+        #     #print(prompt.split('\n')[-4])
 
 if __name__ == "__main__":
     main()

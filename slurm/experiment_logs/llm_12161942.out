@@ -1,0 +1,60 @@
+==========================================
+SLURM_JOB_ID = 2161942
+SLURM_JOB_NODELIST = gpu013
+==========================================
+### Launching Experiment - LLM ###
+wandb: Currently logged in as: rntc. Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.16.3 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.15.12
+wandb: Run data is saved locally in /home/rtouchen/camembert-bio/wandb/run-20240229_204159-a7y5owfv
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run run_llm_rag
+wandb: ⭐️ View project at https://wandb.ai/rntc/llm_bioqa
+wandb: 🚀 View run at https://wandb.ai/rntc/llm_bioqa/runs/a7y5owfv
+WARNING 02-29 20:42:04 config.py:577] Casting torch.float16 to torch.bfloat16.
+INFO 02-29 20:42:04 config.py:413] Custom all-reduce kernels are temporarily disabled due to stability issues. We will re-enable them once the issues are resolved.
+2024-02-29 20:42:08,862	INFO worker.py:1724 -- Started a local Ray instance.
+INFO 02-29 20:42:26 llm_engine.py:79] Initializing an LLM engine with config: model='meta-llama/Llama-2-70b-hf', tokenizer='meta-llama/Llama-2-70b-hf', tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=2, disable_custom_all_reduce=True, quantization=None, enforce_eager=False, kv_cache_dtype=auto, device_config=cuda, seed=0)
+INFO 02-29 20:42:44 weight_utils.py:163] Using model weights format ['*.safetensors']
+[36m(RayWorkerVllm pid=64112)[0m INFO 02-29 20:42:44 weight_utils.py:163] Using model weights format ['*.safetensors']
+Traceback (most recent call last):
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/pathlib.py", line 1175, in mkdir
+OSError: [Errno 5] Input/output error: '/scratch/rtouchen/.cache/.locks/models--meta-llama--Llama-2-70b-hf'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rtouchen/camembert-bio/run_llm_qa_benchmark.py", line 204, in <module>
+    main()
+  File "/home/rtouchen/camembert-bio/run_llm_qa_benchmark.py", line 189, in main
+    llm = LLM(model_id, tensor_parallel_size=args.tensor_parallel_size, dtype=args.dtype)
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/entrypoints/llm.py", line 109, in __init__
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/engine/llm_engine.py", line 371, in from_engine_args
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/engine/llm_engine.py", line 118, in __init__
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/engine/llm_engine.py", line 287, in _init_workers_ray
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/engine/llm_engine.py", line 1014, in _run_workers
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/worker/worker.py", line 100, in load_model
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/worker/model_runner.py", line 84, in load_model
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/model_executor/model_loader.py", line 86, in get_model
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/model_executor/models/llama.py", line 360, in load_weights
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/model_executor/weight_utils.py", line 210, in hf_model_weights_iterator
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/vllm/model_executor/weight_utils.py", line 167, in prepare_hf_model_weights
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 118, in _inner_fn
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/huggingface_hub/_snapshot_download.py", line 308, in snapshot_download
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/tqdm/contrib/concurrent.py", line 69, in thread_map
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/tqdm/contrib/concurrent.py", line 51, in _executor_map
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/tqdm/std.py", line 1169, in __iter__
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/concurrent/futures/_base.py", line 621, in result_iterator
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/concurrent/futures/_base.py", line 319, in _result_or_cancel
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/concurrent/futures/_base.py", line 458, in result
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/huggingface_hub/_snapshot_download.py", line 283, in _inner_hf_hub_download
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 118, in _inner_fn
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/site-packages/huggingface_hub/file_download.py", line 1415, in hf_hub_download
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/pathlib.py", line 1184, in mkdir
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/pathlib.py", line 1305, in is_dir
+  File "/home/rtouchen/miniconda3/envs/py310/lib/python3.10/pathlib.py", line 1097, in stat
+BrokenPipeError: [Errno 108] Cannot send after transport endpoint shutdown: '/scratch/rtouchen/.cache/.locks/models--meta-llama--Llama-2-70b-hf'
+[2024-02-29 20:45:23,867 E 60112 60491] gcs_rpc_client.h:552: Failed to connect to GCS within 60 seconds. GCS may have been killed. It's either GCS is terminated by `ray stop` or is killed unexpectedly. If it is killed unexpectedly, see the log file gcs_server.out. https://docs.ray.io/en/master/ray-observability/ray-logging.html#logging-directory-structure. The program will terminate.

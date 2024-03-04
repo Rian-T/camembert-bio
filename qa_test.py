@@ -32,7 +32,7 @@ for benchmark in benchmarks:
             # )
 
             sampling_params = SamplingParams(temperature=0.1, top_p=0.95)
-            llm = LLM(model_id, tensor_parallel_size=1, dtype="half")
+            llm = LLM(model_id, tensor_parallel_size=2, dtype="half")
 
             tokenizer = AutoTokenizer.from_pretrained(model_id)
             # model = AutoModelForCausalLM.from_pretrained(
